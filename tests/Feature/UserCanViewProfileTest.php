@@ -5,13 +5,11 @@ namespace Tests\Feature;
 use App\Post;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Laravel\Passport\Bridge\UserRepository;
+use Storage;
 use Tests\TestCase;
 
 class UserCanViewProfileTest extends TestCase
 {
-
     use RefreshDatabase;
 
     /** @test */
@@ -20,20 +18,19 @@ class UserCanViewProfileTest extends TestCase
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $posts = factory(Post::class)->create();
 
-
-        $response = $this->get('/api/users/' . $user->id);
+        $response = $this->get('/api/users/'.$user->id);
 
         $response->assertStatus(200)->assertJson([
             'data' => [
                 'type' => 'users',
                 'user_id' => $user->id,
                 'attributes' => [
-                    'name' => $user->name
-                ]
+                    'name' => $user->name,
+                ],
             ],
             'links' => [
-                'self' => url('/users/' . $user->id)
-            ]
+                'self' => url('/users/'.$user->id),
+            ],
         ]);
     }
 
@@ -44,8 +41,7 @@ class UserCanViewProfileTest extends TestCase
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $post = factory(Post::class)->create(['user_id' => $user->id]);
 
-
-        $response = $this->get('/api/users/' . $user->id . '/posts');
+        $response = $this->get('/api/users/'.$user->id.'/posts');
 
         $response->assertStatus(200)->assertJson([
             'data' => [
@@ -55,24 +51,22 @@ class UserCanViewProfileTest extends TestCase
                         'post_id' => $post->id,
                         'attributes' => [
                             'body' => $post->body,
-                            'image' => url($post->image),
+                            'image' => Storage::url($post->image),
                             'posted_at' => $post->created_at->diffForHumans(),
                             'posted_by' => [
                                 'data' => [
                                     'attributes' => [
-                                        'name' => $user->name
-                                    ]
-                                ]
-                            ]
-                        ]
+                                        'name' => $user->name,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'links' => [
-                        'self' => url('/posts/' . $post->id)
-                    ]
-                ]
-            ]
+                        'self' => url('/posts/'.$post->id),
+                    ],
+                ],
+            ],
         ]);
     }
-
-
 }

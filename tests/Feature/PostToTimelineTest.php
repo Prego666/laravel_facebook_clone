@@ -5,14 +5,12 @@ namespace Tests\Feature;
 use App\Post;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PostToTimelineTest extends TestCase
 {
-
     use RefreshDatabase;
 
     protected function setUp(): void
@@ -23,7 +21,6 @@ class PostToTimelineTest extends TestCase
     }
 
     /** @test */
-
     public function a_user_can_post_a_post()
     {
         $this->withoutExceptionHandling();
@@ -39,7 +36,6 @@ class PostToTimelineTest extends TestCase
         $this->assertEquals($user->id, $post->user_id);
         $this->assertEquals('Testing Body', $post->body);
 
-
         $response->assertStatus(201)
             ->assertJson([
                 'data' => [
@@ -49,16 +45,16 @@ class PostToTimelineTest extends TestCase
                         'posted_by' => [
                             'data' => [
                                 'attributes' => [
-                                    'name' => $user->name
-                                ]
-                            ]
+                                    'name' => $user->name,
+                                ],
+                            ],
                         ],
-                        'body' => 'Testing Body'
+                        'body' => 'Testing Body',
                     ],
                 ],
                 'links' => [
-                    'self' => url('/posts/' . $post->id)
-                ]
+                    'self' => url('/posts/'.$post->id),
+                ],
             ]);
     }
 
@@ -84,10 +80,9 @@ class PostToTimelineTest extends TestCase
                 'data' => [
                     'attributes' => [
                         'body' => 'Testing Body',
-                        'image' => url('post-images/'.$file->hashName())
+                        'image' => Storage::url('post-images/'.$file->hashName()),
                     ],
                 ],
             ]);
     }
-
 }

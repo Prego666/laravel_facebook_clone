@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\User;
 use App\UserImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -13,7 +12,6 @@ use Tests\TestCase;
 class UserImagesTest extends TestCase
 {
     use RefreshDatabase;
-
 
     protected function setUp(): void
     {
@@ -34,11 +32,11 @@ class UserImagesTest extends TestCase
             'image' => $file,
             'width' => 850,
             'height' => 300,
-            'location' => 'cover'])->assertStatus(201);
+            'location' => 'cover', ])->assertStatus(201);
 
-        Storage::disk('public')->assertExists('user-images/' . $file->hashName());
+        Storage::disk('public')->assertExists('user-images/'.$file->hashName());
         $userImage = UserImage::first();
-        $this->assertEquals('user-images/' . $file->hashName(), $userImage->path);
+        $this->assertEquals('user-images/'.$file->hashName(), $userImage->path);
         $this->assertEquals('850', $userImage->width);
         $this->assertEquals('300', $userImage->height);
         $this->assertEquals('cover', $userImage->location);
@@ -49,15 +47,15 @@ class UserImagesTest extends TestCase
                 'type' => 'user-images',
                 'user-image-id' => $userImage->id,
                 'attributes' => [
-                    'path' => asset('storage/'.$userImage->path),
+                    'path' => Storage::url($userImage->path),
                     'width' => $userImage->width,
                     'height' => $userImage->height,
                     'location' => $userImage->location,
-                ]
+                ],
             ],
             'links' => [
-                'self' => url('/user/' . $user->id)
-            ]
+                'self' => url('/user/'.$user->id),
+            ],
         ]);
     }
 
@@ -71,14 +69,14 @@ class UserImagesTest extends TestCase
             'image' => $file,
             'width' => 850,
             'height' => 300,
-            'location' => 'cover'])
+            'location' => 'cover', ])
             ->assertStatus(201);
 
         $this->post('api/user-images', [
             'image' => $file,
             'width' => 850,
             'height' => 300,
-            'location' => 'profile'])
+            'location' => 'profile', ])
             ->assertStatus(201);
 
         $response = $this->get('/api/users/'.$user->id);
@@ -92,19 +90,18 @@ class UserImagesTest extends TestCase
                         'data' => [
                             'type' => 'user-images',
                             'user-image-id' => 1,
-                            'attributes' => []
+                            'attributes' => [],
                         ],
                     ],
                     'profile_image' => [
                         'data' => [
                             'type' => 'user-images',
                             'user-image-id' => 2,
-                            'attributes' => []
+                            'attributes' => [],
                         ],
-                    ]
+                    ],
                 ],
             ],
         ]);
     }
-
 }

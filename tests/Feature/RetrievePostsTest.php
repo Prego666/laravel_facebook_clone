@@ -6,12 +6,13 @@ use App\Friend;
 use App\Post;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Storage;
 use Tests\TestCase;
 
 class RetrievePostsTest extends TestCase
 {
     use RefreshDatabase;
+
     /** @test */
     public function a_user_can_retrieve_post()
     {
@@ -22,7 +23,7 @@ class RetrievePostsTest extends TestCase
             'user_id' => $user->id,
             'friend_id' => $anotherUser->id,
             'status' => 1,
-            'confirmed_at' => now()
+            'confirmed_at' => now(),
         ]);
 
         $response = $this->get('/api/posts');
@@ -35,10 +36,10 @@ class RetrievePostsTest extends TestCase
                         'post_id' => $posts->last()->id,
                         'attributes' => [
                             'body' => $posts->last()->body,
-                            'image' => url($posts->last()->image),
-                            'posted_at' => $posts->last()->created_at->diffForHumans()
-                        ]
-                    ]
+                            'image' => Storage::url($posts->last()->image),
+                            'posted_at' => $posts->last()->created_at->diffForHumans(),
+                        ],
+                    ],
                 ],
                 [
                     'data' => [
@@ -46,15 +47,15 @@ class RetrievePostsTest extends TestCase
                         'post_id' => $posts->first()->id,
                         'attributes' => [
                             'body' => $posts->first()->body,
-                            'image' => url($posts->first()->image),
-                            'posted_at' => $posts->first()->created_at->diffForHumans()
-                        ]
-                    ]
-                ]
+                            'image' => Storage::url($posts->first()->image),
+                            'posted_at' => $posts->first()->created_at->diffForHumans(),
+                        ],
+                    ],
+                ],
             ],
             'links' => [
-                'self' => url('/posts')
-            ]
+                'self' => url('/posts'),
+            ],
         ]);
     }
 
@@ -69,11 +70,8 @@ class RetrievePostsTest extends TestCase
         $response->assertStatus(200)->assertExactJson([
             'data' => [],
             'links' => [
-                'self' => url('/posts')
-            ]
+                'self' => url('/posts'),
+            ],
         ]);
     }
-
-
 }
-

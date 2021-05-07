@@ -2,15 +2,17 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User as UserResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Storage;
 
 class Post extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function toArray($request)
@@ -24,13 +26,13 @@ class Post extends JsonResource
                     'likes' => new LikeCollection($this->likes),
                     'comments' => new CommentCollection($this->comments),
                     'body' => $this->body,
-                    'image' => url($this->image),
-                    'posted_at' => $this->created_at->diffForHumans()
+                    'image' => Storage::url($this->image),
+                    'posted_at' => $this->created_at->diffForHumans(),
                 ],
             ],
             'links' => [
-                'self' => url('/posts/' . $this->id)
-            ]
+                'self' => url('/posts/'.$this->id),
+            ],
         ];
     }
 }
